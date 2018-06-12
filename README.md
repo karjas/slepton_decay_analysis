@@ -35,11 +35,12 @@ Gives the information on the event and the file as whole
 
 ###### a) First line, process independent information
 
+| | | | | | | | | | |
 |---|---|---|---|---|---|---|---|---|---|
 |IDBMUP(1) | IDBMUP(2) | EBMUP(1) | EBMUP(2) | PDFGUP(1) | PDFGUP(2) | PDFSUP(1) | PDFSUP(2) | IDWTUP | NPRUP|
 
 
-
+| | |
 | --- | --- |
 IDBMUP(1) | Incoming beam 1 identity 
 IDBMUP(2) | Incoming beam 2 identity
