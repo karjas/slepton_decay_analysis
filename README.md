@@ -36,7 +36,7 @@ Gives the information on the event and the file as whole
 ###### a) First line, process independent information
 
 |--|--|--|--|--|--|--|--|--|--|
-IDBMUP(1) | IDBMUP(2) | EBMUP(1) | EBMUP(2) | PDFGUP(1) | PDFGUP(2) | PDFSUP(1) | PDFSUP(2) | IDWTUP | NPRUP
+|IDBMUP(1) | IDBMUP(2) | EBMUP(1) | EBMUP(2) | PDFGUP(1) | PDFGUP(2) | PDFSUP(1) | PDFSUP(2) | IDWTUP | NPRUP|
 
 
 
@@ -54,7 +54,7 @@ NPRUP | Number of separately identified processes
 
 ###### b) NPRUP lines, one for each process IPR in the range 1 through NPRUP: 
 |--|--|--|--|
-XSECUP(IPR) | XERRUP(IPR) | XMAXUP(IPR) | LPRUP(IPR)
+|XSECUP(IPR) | XERRUP(IPR) | XMAXUP(IPR) | LPRUP(IPR)|
 
 |--|--|
 XSECUP(IPR) | Cross-section information
