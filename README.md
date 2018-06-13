@@ -55,6 +55,19 @@ The following example command creates and runs a configuration file testi11.py w
 ```bash
 cmsDriver.py testi.py -s GEN,SIM -n 100 --conditions auto:mc --filein file:slr.lhe --filetype=LHE --python_filename testi11.py --fast --pileup=NoPileUp --fileout file:slrTesti.root --datatier GEN-SIM --eventcontent RAWSIM
 ```
+The pileup can be introduced by first generating a .root -file. The following generates a pileup file simulating early 2017 conditions.
+
+```bash
+cmsDriver.py MinBias_13TeV_pythia8_TuneCUETP8M1_cfi --conditions auto:run2_mc --fast -n 1000 --era Run2_25ns --eventcontent FASTPU \
+-s GEN,SIM,RECOBEFMIX,DIGI:pdigi_valid,RECO --datatier GEN-SIM-RECO --beamspot Realistic25ns13TeVEarly2017Collision\
+--fileout file:pileUp2017.root
+```
+
+The pileup can be introduced to event generation with options --pileup_input and --pileup. First one takes the previously generated root file as an argument and the second contains information that doesn't depend on the events. The following command is used to generate, simulate and reconstruct 1000 events with pileup.
+
+```bash
+cmsDriver.py testi.py -s GEN,SIM,DIGI,RECO -n 1000 --conditions auto:run2_mc --filein file:slr.lhe --filetype=LHE --python_filename testi13.py --fast --pileup_input file:pileUp2017.root --fileout file:slrEvents.root --datatier GEN-SIM-DIGI-RECO --eventcontent AODSIM --pileup AVE_35_BX_25ns
+```
 
 ### 3c. Profit
 
