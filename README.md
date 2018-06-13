@@ -41,9 +41,22 @@ For this project, CMSSW_9_2_3 running on lxplus was used. The guide for setting 
 
 When the computing environment has been set up (cmsenv has been run in the src/ -folder succesfully) the following packages need to be forked from git.
 
+```bash
 git cms-addpkg GeneratorInterface/LHEInterface
-git cms-addpkg Configuration/Generator
 
+git cms-addpkg Configuration/Generator
+```
+### 3b. Create the runnable config.py file with cmsDriver
+
+cmsDriver.py is used with to create the config.py file with a correct fragment. The fragment contains necessary information for making the lhe file compatible with the CMSSW framework via pythia 8 hadronization. By default the config file will be read from 'src/Configuration/Generator/python/' -folder. For example, the path to testi.py -fragment is 'src/Configuration/Generator/python/testi.py'.
+
+The following example command creates and runs a configuration file testi11.py which uses slr.lhe (which is located in the same directory as the command is being run from) as input and then performs GENeration and SIMulation steps on the data and saves the output into slrTesti.root -file.
+
+```bash
+cmsDriver.py testi.py -s GEN,SIM -n 100 --conditions auto:mc --filein file:slr.lhe --filetype=LHE --python_filename testi11.py --fast --pileup=NoPileUp --fileout file:slrTesti.root --datatier GEN-SIM --eventcontent RAWSIM
+```
+
+### 3c. Profit
 
 
 
