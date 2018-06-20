@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/env python
 # Script for combining two SuSpect files with valid param cards
 import pprint
 import pdb
