@@ -46,9 +46,9 @@ def file2dict(fpath):
     blocks = {}
     decays = {}
     # The block identifier we are currently processing in the loop
-    current_identifier = False 
+    current_identifier = False
     # The particle decay we are currently processing in the loop
-    current_particle = False 
+    current_particle = False
     for line in read_lines(fpath):
         indented = False
         if len(line) > 0 and line[0] == ' ':
@@ -59,7 +59,7 @@ def file2dict(fpath):
         splitted = line.split(comment_char, 1) # Cut away the commented part
         comment = ''
         if len(splitted) == 2:
-            comment = splitted[1] 
+            comment = splitted[1]
         comments.append(comment)
         line = splitted[0]
         words = line.split()
@@ -67,6 +67,7 @@ def file2dict(fpath):
             continue
         keyword = words[0]
         if keyword == 'BLOCK':
+           # print(keyword)
             identifier = line.split(None, 1)[1].rstrip()
             if identifier not in blocks:
                 blocks[identifier] = {}
@@ -118,6 +119,15 @@ def dict2file(d, fpath, overwrite=False):
     else:
         write_lines(output, fpath)
 
+def combineMasses(d): # A function to set required masses as equal for MadGraph5
+    # List of masses that need to be equal
+    eqMasses={'1000012':'1000014','2000001':'2000003', '1000001':'1000003','2000011':'2000013','1000011':'1000013','1000002':'1000004','2000002':'2000004'} 
+    for k in eqMasses.keys():
+        tmp = d[k].split(" ")
+        tmp = filter(None, tmp)
+        m = tmp[1]
+        d[eqMasses[k]]=" {} {}".format(eqMasses[k],m)
+    return d
 
 def mergedicts(a, b):
     ''' Merge the dicts a and b by overwriting common values with the values in b '''
@@ -133,8 +143,15 @@ def mergedicts(a, b):
             merged['blocks'][identifier] = {}
         for key, line in b_block.items():
             merged['blocks'][identifier][key] = line
-
+    #print("------------MERGED-----------")
+    #pprint.pprint(merged['blocks']['MASS'])
+    
+#    import pdb; pdb.set_trace()
+    if 'MASS' in merged['blocks'].keys():
+        merged['blocks']['MASS'] = combineMasses(merged['blocks']['MASS'])
     return merged
+
+
 
 
 if __name__ == '__main__':

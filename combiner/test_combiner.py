@@ -30,5 +30,7 @@ def test_merge_additional():
     d = combiner.file2dict('fixtures/param_card_test.dat')
     merged = combiner.mergedicts(d, addition)
     assert_dict_equality(merged, combiner.file2dict('fixtures/param_card_test2.dat'))
-    
+    return
 
+if __name__ == '__main__':
+    test_read_write('testi')
