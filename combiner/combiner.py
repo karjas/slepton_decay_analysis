@@ -20,8 +20,8 @@ def vprint(*args):
 
 def yesno(question):
     print(question)
-    yes = {'yes','y', 'ye', ''}
-    no = {'no','n'}
+    yes = ['yes','y','ye', '']
+    no = ['no','n']
     choice = raw_input().lower()
     if choice in yes:
        return True
@@ -119,34 +119,44 @@ def dict2file(d, fpath, overwrite=False):
     else:
         write_lines(output, fpath)
 
-def combineMasses(d): # A function to set required masses as equal for MadGraph5
-    # List of masses that need to be equal
+def combineMasses(d): 
+    '''A function to set required masses as equal for MadGraph5''' 
+    #List of masses that need to be equal
     eqMasses={'1000012':'1000014','2000001':'2000003', '1000001':'1000003','2000011':'2000013','1000011':'1000013','1000002':'1000004','2000002':'2000004'} 
     for k in eqMasses.keys():
-        tmp = d[k].split(" ")
-        tmp = filter(None, tmp)
-        m = tmp[1]
-        d[eqMasses[k]]=" {} {}".format(eqMasses[k],m)
+        if k in d.keys():
+            tmp = d[k].split(" ")
+            tmp = filter(None, tmp)
+            m = tmp[1]
+            d[eqMasses[k]]=" {0} {1}".format(eqMasses[k],m)
     return d
+
+def generateMassCard(mne,mslr):
+    ''' Creates a mass card for -m option with only neutralino and right handed slepton masses'''
+    slr = '2000013'
+    ne = '1000022'
+    slrval = " {0} {1}".format(slr, mslr)
+    neval = " {0} {1}".format(ne, mne)
+    outDict = {'blocks':{'MASS':{slr:slrval,ne:neval}}}
+    return outDict
 
 def mergedicts(a, b):
     ''' Merge the dicts a and b by overwriting common values with the values in b '''
     merged = copy.deepcopy(a)
     a_blocks = a['blocks']
-    b_decays = b['decays']
     b_blocks = b['blocks']
 
-    for particle, b_decay in b_decays.items():
-        merged['decays'][particle] = copy.deepcopy(b_decay)
+    if 'decays' in b.keys():
+        b_decays = b['decays']
+        for particle, b_decay in b_decays.items():
+            merged['decays'][particle] = copy.deepcopy(b_decay)
+    
     for identifier, b_block in b_blocks.items():
         if identifier not in a_blocks:
             merged['blocks'][identifier] = {}
         for key, line in b_block.items():
             merged['blocks'][identifier][key] = line
-    #print("------------MERGED-----------")
-    #pprint.pprint(merged['blocks']['MASS'])
     
-#    import pdb; pdb.set_trace()
     if 'MASS' in merged['blocks'].keys():
         merged['blocks']['MASS'] = combineMasses(merged['blocks']['MASS'])
     return merged
@@ -155,14 +165,37 @@ def mergedicts(a, b):
 
 
 if __name__ == '__main__':
-    if len(sys.argv) != 3:
-        print('Usage : ./combiner.py <input file path> <output file path>')
-        print('Default card file "default_card.dat" needs to be in the working directory.')
+   # print(len(sys.argv))
+    
+    if len(sys.argv) == 1:
+        opt = '-h'
+    else:
+        opt = sys.argv[1]
+    if os.path.exists(default_path):
+        original_dict = file2dict(default_path)
+    else:
+        print("Include default_card.dat in the running folder")
         sys.exit(1)
-    nam1 = sys.argv[1]
-    nam2 = sys.argv[2]
-    original_dict = file2dict(default_path)
-    new_dict = file2dict(nam1)
+
+    if opt == '-h':
+        print('Options :\n\t -f <input file path> <output file path>\n\t -m <output file path> <neutralino mass (GeV)> <slepton mass (GeV)\n\t -h This help message')
+        sys.exit(1)
+    elif opt == '-f':
+        nam1 = sys.argv[2]
+        nam2 = sys.argv[3]
+        new_dict = file2dict(nam1)
+    elif opt == '-m':
+        nam2 = sys.argv[2]
+        m1 = sys.argv[3]
+        m2 = sys.argv[4]
+        new_dict = generateMassCard(m1,m2)
+        #print(original_dict['blocks']['MASS'])
+    else:
+        print('Options :\n\t -f <input file path> <output file path>\n\t -m <output file path> <neutralino mass (GeV)> <slepton mass (GeV)\n\t -h This help message')
+        sys.exit(1)
     merged = mergedicts(original_dict, new_dict)
+
     dict2file(merged, nam2)
+
+
 
