@@ -1,0 +1,152 @@
+[?1034h************************************************************
+*                                                          *
+*                     W E L C O M E to                     *
+*              M A D G R A P H 5 _ a M C @ N L O           *
+*                                                          *
+*                                                          *
+*                 *                       *                *
+*                   *        * *        *                  *
+*                     * * * * 5 * * * *                    *
+*                   *        * *        *                  *
+*                 *                       *                *
+*                                                          *
+*         VERSION 2.6.3                 2018-06-15         *
+*                                                          *
+*    The MadGraph5_aMC@NLO Development Team - Find us at   *
+*    https://server06.fynu.ucl.ac.be/projects/madgraph     *
+*                            and                           *
+*            http://amcatnlo.web.cern.ch/amcatnlo/         *
+*                                                          *
+*               Type 'help' for in-line help.              *
+*           Type 'tutorial' to learn how MG5 works         *
+*    Type 'tutorial aMCatNLO' to learn how aMC@NLO works   *
+*    Type 'tutorial MadLoop' to learn how MadLoop works    *
+*                                                          *
+************************************************************
+load MG5 configuration from ../../madGraphz/MG5_aMC_v2_6_2/input/mg5_configuration.txt 
+set collier to /afs/cern.ch/user/k/karjas/private/madGraphz/MG5_aMC_v2_6_2/HEPTools/collier
+fastjet-config does not seem to correspond to a valid fastjet-config executable (v3+). We will use fjcore instead.
+ Please set the 'fastjet'variable to the full (absolute) /PATH/TO/fastjet-config (including fastjet-config).
+ MG5_aMC> set fastjet /PATH/TO/fastjet-config
+
+set lhapdf to /afs/cern.ch/user/k/karjas/private/madGraphz/MG5_aMC_v2_6_2/HEPTools/lhapdf6/bin/lhapdf-config
+Using default eps viewer "evince". Set another one in ./input/mg5_configuration.txt
+Using default web browser "firefox". Set another one in ./input/mg5_configuration.txt
+import /afs/cern.ch/user/k/karjas/private/CMSSW/dataFold/mg5Cards/slrRun.dat
+The import format was not given, so we guess it as command
+launch /tmp/karjas/slr
+************************************************************
+*                                                          *
+*                      W E L C O M E to                    *
+*             M A D G R A P H 5 _ a M C @ N L O            *
+*                      M A D E V E N T                     *
+*                                                          *
+*                 *                       *                *
+*                   *        * *        *                  *
+*                     * * * * 5 * * * *                    *
+*                   *        * *        *                  *
+*                 *                       *                *
+*                                                          *
+*         VERSION 2.6.3                 2018-06-15         *
+*                                                          *
+*    The MadGraph5_aMC@NLO Development Team - Find us at   *
+*    https://server06.fynu.ucl.ac.be/projects/madgraph     *
+*                                                          *
+*               Type 'help' for in-line help.              *
+*                                                          *
+************************************************************
+INFO: load configuration from /tmp/karjas/slr/Cards/me5_configuration.txt  
+INFO: load configuration from /afs/cern.ch/user/k/karjas/private/madGraphz/MG5_aMC_v2_6_2/input/mg5_configuration.txt  
+INFO: load configuration from /tmp/karjas/slr/Cards/me5_configuration.txt  
+generate_events run_10
+[1;34mDelphes program installed but no parton shower module detected.
+    Please install pythia8[0m
+The following switches determine which programs are run:
+/=====================================================================================\
+| 1. Choose the shower/hadronization program   [1m  shower[0m = [01mNot Avail.[0m                  |
+| 2. Choose the detector simulation program    [1mdetector[0m = [01mNot Avail.[0m                  |
+| 3. Choose an analysis package (plot/convert) [1manalysis[0m = [31mOFF[0m                         |
+| 4. Decay onshell particles                   [1m madspin[0m = [31mOFF[0m                         |
+| 5. Add weights to events for new hypp.       [1mreweight[0m = [31mOFF[0m                         |
+\=====================================================================================/
+Either type the switch number (1 to 5) to change its setting,
+Set any switch explicitly (e.g. type 'madspin=ON' at the prompt)
+Type 'help' for the list of all valid option
+Type '0', 'auto', 'done' or just press enter when you are done.
+Do you want to edit a card (press enter to bypass editing)?
+/------------------------------------------------------------\
+|  [31m1[0m. param : [32mparam_card.dat[0m                                 |
+|  [31m2[0m. run   : [32mrun_card.dat[0m                                   |
+\------------------------------------------------------------/
+ you can also
+   - enter the path to a valid card or banner.
+   - use the 'set' command to modify a parameter directly.
+     The set option works only for param_card and run_card.
+     Type 'help set' for more information on this command.
+   - call an external program (ASperGE/MadWidth/...).
+     Type 'help' for the list of available command
+ [[4m0[0m, done, 1, param, 2, run, enter path]
+[1mThe answer to the previous question is not set in your input file[0m
+[1mUse 0 value[0m
+INFO: Update the dependent parameter of the param_card.dat 
+[1;34mWARNING: Unknow type of information in the card: higgsboundsinputhiggscouplingsfermions,sbotmix,snumix,ad,au,staumix,sphenolowenergy,minpar,fwcoef,imfwcoef,vckm,alpha,gauge,higgsboundsinputhiggscouplingsbosons,extpar,ae,modsel,upmns,stopmix [0m
+[1;34mWARNING: For consistency, the width of particle 1000025 (n3) is changed to -3.29791041. [0m
+Generating 10000 events with run name run_10
+survey  run_10 
+INFO: compile directory 
+compile Source Directory
+Using random number seed offset = 102
+INFO: Running Survey 
+Creating Jobs
+Working on SubProcesses
+INFO:     P1_aa_murpmurm_murp_ln1_murm_ln1  
+INFO:  Idle: 1,  Running: 0,  Completed: 0 [ current time: 17h38 ] 
+INFO:  Idle: 0,  Running: 0,  Completed: 1 [  1.8s  ] 
+INFO:  Idle: 0,  Running: 0,  Completed: 1 [  1.8s  ] 
+INFO: End survey 
+refine 10000
+Creating Jobs
+INFO: Refine results to 10000 
+INFO: Generating 10000.0 unweigthed events. 
+INFO: Effective Luminosity 67235177.4448 pb^-1 
+INFO: need to improve 2 channels 
+Current estimate of cross-section: 0.000178478 +- 1.88115303205e-05
+    P1_aa_murpmurm_murp_ln1_murm_ln1 
+INFO:  Idle: 3,  Running: 10,  Completed: 0 [ current time: 17h38 ] 
+INFO:  Idle: 2,  Running: 10,  Completed: 1 [  7.8s  ] 
+INFO:  Idle: 0,  Running: 3,  Completed: 10 [  11.1s  ] 
+INFO:  Idle: 0,  Running: 0,  Completed: 13 [  14.3s  ] 
+INFO:  Idle: 0,  Running: 0,  Completed: 13 [  14.3s  ] 
+INFO: Combining runs 
+INFO: finish refine 
+refine 10000
+Creating Jobs
+INFO: Refine results to 10000 
+INFO: Generating 10000.0 unweigthed events. 
+INFO: Effective Luminosity 67217853.0618 pb^-1 
+INFO: need to improve 0 channels 
+Current estimate of cross-section: 0.000178524 +- 5.93648325021e-07
+    P1_aa_murpmurm_murp_ln1_murm_ln1 
+INFO:  Idle: 0,  Running: 0,  Completed: 0 [ current time: 17h38 ] 
+INFO: Combining runs 
+INFO: finish refine 
+INFO: Combining Events 
+  === Results Summary for run: run_10 tag: tag_1 ===
+
+     Cross-section :   0.0001785 +- 5.936e-07 pb
+     Nb of events :  10000
+ 
+fail
+[1;34mFailed to access python version of LHAPDF: If the python interface to LHAPDF is available on your system, try adding its location to the PYTHONPATH environment variable and theLHAPDF library location to LD_LIBRARY_PATH (linux) or DYLD_LIBRARY_PATH (mac os x).[0m
+INFO: can not run systematics since can not link python to lhapdf 
+store_events
+INFO: Storing parton level results 
+INFO: End Parton 
+reweight -from_cards
+decay_events -from_cards
+INFO: storing files of previous run 
+INFO: Done 
+quit
+INFO:  
+more information in /tmp/karjas/slr/index.html
+quit

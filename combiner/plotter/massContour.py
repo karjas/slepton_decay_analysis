@@ -77,10 +77,20 @@ def pColormeshPlot(fin, fout = -1, replace = False, step = 1, smooth = True, log
         ZZ = np.ma.log10(ZZ)
     
     img = ax.pcolormesh(xx,yy,ZZ, cmap = plt.cm.get_cmap('Blues'))
+    
+    Mlep = np.arange(x_min,x_max)
+    Mneu = Mlep - 10
+
+    Mkin = Mlep
+    
+    ax.plot(Mlep,Mneu)
+    ax.plot(Mlep,Mkin)
+
     fig.colorbar(img, ax=ax)
     ax.set_xlabel(r'$m_{\tilde{l}}$    [GeV]')
     ax.set_ylabel(r'$m_{\tilde{\chi_1^0}}$    [GeV]')
     ax.set_title(title)
+    ax.set_ylim([y_min,y_max])
     plt.savefig(dirout+"/"+title+'.pdf', format='pdf')
 
 def smoothen(A, B, cut=-6):
@@ -116,7 +126,7 @@ def smoothen(A, B, cut=-6):
     #print(nozeros)
 
 if __name__ == '__main__':
-        contPlot(sys.argv[1],replace = True, step = 10)
+        pColormeshPlot(sys.argv[1],replace = True,smooth=True, step = 5)
     
 
 
