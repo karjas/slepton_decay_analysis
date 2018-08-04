@@ -217,6 +217,8 @@ def script_relative_path(rel_path):
 def compute_decays(mass_dict):
     use_susyhit_suspect(False)
     sdecay_input = read_lines(script_relative_path('tools/susyhit/slhaspectrum.in.default'))
+    sdecay_input[65] = mass_dict['blocks']['MASS']['1000011']
+    sdecay_input[66] = mass_dict['blocks']['MASS']['1000013']
     sdecay_input[67] = mass_dict['blocks']['MASS']['2000011']
     sdecay_input[68] = mass_dict['blocks']['MASS']['2000013']
     sdecay_input[74] = mass_dict['blocks']['MASS']['1000022']
