@@ -55,7 +55,7 @@ def file2dict(fpath):
             indented = True
         line = ' '.join(line.strip().split())
         if indented:
-            line = ' %s' % line
+            line = '  %s' % line
         splitted = line.split(comment_char, 1) # Cut away the commented part
         comment = ''
         if len(splitted) == 2:
@@ -101,8 +101,8 @@ def file2dict(fpath):
 
 def dict2file(d, fpath, overwrite=False):
     output = []     # Array of lines in the output file
-    decays = d['decays']
-    blocks = d['blocks']
+    decays = d['decays'] if 'decays' in d else {}
+    blocks = d['blocks'] if 'blocks' in d else {}
     for identifier, block in blocks.items():
         output.append('BLOCK %s' % identifier)
         for key, line in block.items():
@@ -112,7 +112,7 @@ def dict2file(d, fpath, overwrite=False):
         for branch in decay['branches']:
             output.append(branch)
 
-    if os.path.exists(fpath):
+    if os.path.isfile(fpath):
         if overwrite or yesno('File %s exists, overwrite? [y/n]' % fpath):
             vprint('Overwriting file %s...' % fpath)
             write_lines(output, fpath)
@@ -125,19 +125,31 @@ def combineMasses(d):
     eqMasses={'1000012':'1000014','2000001':'2000003', '1000001':'1000003','2000011':'2000013','1000011':'1000013','1000002':'1000004','2000002':'2000004'} 
     for k in eqMasses.keys():
         if k in d.keys():
-            tmp = d[k].split(" ")
+            tmp = d[k].split()
             tmp = filter(None, tmp)
             m = tmp[1]
             d[eqMasses[k]]=" {0} {1}".format(eqMasses[k],m)
     return d
 
 def generateMassCard(mne,mslr):
-    ''' Creates a mass card for -m option with only neutralino and right handed slepton masses'''
-    slr = '2000013'
+    ''' Creates a mass card with only neutralino and right handed slepton masses'''
+    slrmu = '2000013'
+    slre = '2000011'
+    sllmu = '1000013'
+    slle = '1000011'
     ne = '1000022'
-    slrval = " {0} {1}".format(slr, mslr)
+    slrmuval = " {0} {1}".format(slrmu, mslr)
+    slreval = " {0} {1}".format(slre, mslr)
+    sllmuval = " {0} {1}".format(sllmu, mslr)
+    slleval = " {0} {1}".format(slle, mslr)
     neval = " {0} {1}".format(ne, mne)
-    outDict = {'blocks':{'MASS':{slr:slrval,ne:neval}}}
+    outDict = {'blocks':{'MASS':{
+        slrmu:slrmuval,
+        slre:slreval,
+        sllmu:sllmuval,
+        slle:slleval,
+        ne:neval
+    }}}
     return outDict
 
 def mergedicts(a, b):
@@ -190,16 +202,34 @@ def banner():
     print(ban)
 
 
+def use_susyhit_suspect(setting):
+    susyhit_path = script_relative_path('tools/susyhit')
+    if setting:
+        os.system('cp {0}/susyhit.in.suspect1 {0}/susyhit.in'.format(susyhit_path))
+    else:
+        os.system('cp {0}/susyhit.in.suspect2 {0}/susyhit.in'.format(susyhit_path))
 
 
-if __name__ == '__main__':
-   # print(len(sys.argv))
-    banner()
+def script_relative_path(rel_path):
+    script_dir = os.path.dirname(__file__)
+    return os.path.join(script_dir, rel_path)
+
+def compute_decays(mass_dict):
+    use_susyhit_suspect(False)
+    sdecay_input = read_lines(script_relative_path('tools/susyhit/slhaspectrum.in.default'))
+    sdecay_input[67] = mass_dict['blocks']['MASS']['2000011']
+    sdecay_input[68] = mass_dict['blocks']['MASS']['2000013']
+    sdecay_input[74] = mass_dict['blocks']['MASS']['1000022']
+    write_lines(sdecay_input, script_relative_path('tools/susyhit/slhaspectrum.in'))
+    os.system('cd %s; ./run' % script_relative_path('tools/susyhit'))
+    return file2dict(script_relative_path('tools/susyhit/susyhit_slha.out'))
     
-    if len(sys.argv) == 1:
+
+if __name__ == '__main__': 
+    if len(sys.argv) < 3:
         opt = '-h'
     else:
-        opt = sys.argv[1]
+        opt = sys.argv[2]
     if os.path.exists(default_path):
         original_dict = file2dict(default_path)
     else:
@@ -207,24 +237,24 @@ if __name__ == '__main__':
         sys.exit(1)
 
     if opt == '-h':
-        print('Options :\n\t -f <input file path> <output file path>\n\t -m <output file path> <neutralino mass (GeV)> <slepton mass (GeV)\n\t -h This help message')
+        print('Options :\n   <output file path> -f <input file path>\n   <output file path> -m <neutralino mass (GeV)> <slepton mass (GeV)>\n   -h This help message')
         sys.exit(1)
     elif opt == '-f':
-        nam1 = sys.argv[2]
-        nam2 = sys.argv[3]
-        new_dict = file2dict(nam1)
+        input_file = sys.argv[3]
+        new_dict = file2dict(input_file)
     elif opt == '-m':
-        nam2 = sys.argv[2]
         m1 = sys.argv[3]
         m2 = sys.argv[4]
-        new_dict = generateMassCard(m1,m2)
-        #print(original_dict['blocks']['MASS'])
+        mass_dict = generateMassCard(m1,m2)
+        new_dict = compute_decays(mass_dict)
     else:
-        print('Options :\n\t -f <input file path> <output file path>\n\t -m <output file path> <neutralino mass (GeV)> <slepton mass (GeV)\n\t -h This help message')
+        print('Options :\n   <output file path> -f <input file path>\n   <output file path> -m <neutralino mass (GeV)> <slepton mass (GeV)>\n   -h This help message')
         sys.exit(1)
+    # banner()
+    output_file = sys.argv[1]
     merged = mergedicts(original_dict, new_dict)
 
-    dict2file(merged, nam2)
+    dict2file(merged, output_file)
 
 
 
