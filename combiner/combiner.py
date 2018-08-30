@@ -7,7 +7,7 @@ import copy
 import os
 
 verbose = True
-default_path = 'default_card.dat'
+default_path = '/afs/cern.ch/user/j/jmantere/private/default_card.dat'
 
 
 def vprint(*args):
