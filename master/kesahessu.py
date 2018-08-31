@@ -24,14 +24,15 @@ mg5 = "/afs/cern.ch/user/k/karjas/private/madGraphz/MG5_aMC_v2_6_2/"
 
 combiner = "/afs/cern.ch/user/k/karjas/private/slepton_decay_analysis/combiner/"
 
-dataFoldmg5 = "/afs/cern.ch/user/k/karjas/private/CMSSW/dataFold/mg5Cards/"
+dataFoldmg5 = "/afs/cern.ch/work/k/karjas/private/dataFold/mg5Cards/"
 
-dataFold = "/afs/cern.ch/user/k/karjas/private/CMSSW/dataFold/"
+dataFold = "/afs/cern.ch/work/k/karjas/private/dataFold/"
 
+oFold = "/afs/cern.ch/work/j/jmantere/public/forKristian/"
 tmp = "/tmp/karjas/"
 
-flist = "{}filelist.txt".format(dataFold)
-ggllfold = "/afs/cern.ch/user/k/karjas/private/CMSSW/CMSSW_9_4_0/src/DiffractiveForwardAnalysis/GammaGammaLeptonLepton/test/"
+flist = "{}filelist2.txt".format(dataFold)
+ggllfold = "/afs/cern.ch/work/k/karjas/private/Workspace/CMSSW_9_4_0/src/DiffractiveForwardAnalysis/GammaGammaLeptonLepton/test/"
 
 
 #def createCard(m1,m2):
@@ -43,9 +44,14 @@ def runMg5(eventName):
     mg5run = "{}slr/Cards/run_card.dat".format(tmp)
 
     mg5exe = "{}bin/mg5_aMC".format(mg5)
-    slrInit = "{}slrInit.dat".format(dataFoldmg5)
+    slrInit = "{}murInit.dat".format(dataFoldmg5)
     slrLaunch = "{}slrRun.dat".format(dataFoldmg5)
+    
+    lheOut = "{}lhe/{}.lhe.gz".format(dataFold, eventName)
 
+    flag = checkStep("{}lhe/{}.lhe".format(dataFold,eventName))
+    if not flag:
+        return
     if not os.path.exists("{}slr".format(tmp)):
         print("Initializing mg5")
         call([mg5exe, slrInit])
@@ -63,7 +69,6 @@ def runMg5(eventName):
 
     eventOut="{}slr/Events/{}/unweighted_events.lhe.gz".format(tmp,runID)
 
-    lheOut = "{}lhe/{}.lhe.gz".format(dataFold, eventName)
     
     print("Copying the output file as {}".format(lheOut))
 
@@ -75,7 +80,7 @@ def runMg5(eventName):
     xsecStart = output.find("Cross-section :")
     
     with open(flist, "a") as myfile:
-        myfile.write("{} {} {} coputed{}.root\n".format(eventName, xsec, err, eventName))
+        myfile.write("{} {} {} computed{}.root\n".format(eventName, xsec, err, eventName))
 
     exit_code = process.wait()
 
@@ -119,39 +124,52 @@ def runCMSSWFull(eventName, n = 10):
     finGEN = "{}lhe/{}.lhe".format(dataFold,eventName)
     fpyGEN = "{}pythonScripts/{}FullGEN.py".format(dataFold, eventName)
     foutGEN = "{}fullGen/{}GEN.root".format(dataFold, eventName)
+    #pup = "{}PileUps/pileUp2017.root".format(dataFold)
+    pup ="/store/mc/RunIIFall17GS/MinBias_TuneCP5_inelasticON_13TeV-pythia8/GEN-SIM/93X_mc2017_realistic_v3-v1/30010/6654F7F1-12C4-E711-9C3A-1866DA7F93A3.root" 
+    f1 = checkStep(foutGEN)
 
-    driverCmdGEN = "cmsDriver.py testi.py -n {} --filein file:{} --python_filename {} --fileout file:{} --filetype=LHE --conditions auto:phase1_2017_realistic --era Run2_2017 --beamspot Realistic25ns13TeVEarly2017Collision -s GEN,SIM --mc --eventcontent RAWSIM".format(n,finGEN,fpyGEN,foutGEN)
-    cmd1 = driverCmdGEN.split(" ")
-    call(cmd1)
+    if f1:
+
+        driverCmdGEN = "cmsDriver.py testi.py -n {} --filein file:{} --python_filename {} --fileout file:{} --filetype=LHE --conditions auto:phase1_2017_realistic --era Run2_2017 --beamspot Realistic25ns13TeVEarly2017Collision -s GEN,SIM --mc --eventcontent RAWSIM".format(n,finGEN,fpyGEN,foutGEN)
+        cmd1 = driverCmdGEN.split(" ")
+        call(cmd1)
 
     finS1 = foutGEN
     fpyS1 = "{}pythonScripts/{}FullS1.py".format(dataFold, eventName)
     foutS1 = "{}fullStep1/{}S1.root".format(dataFold, eventName)
 
-    driverCmdStep1 = "cmsDriver.py -s DIGI,L1,DIGI2RAW,HLT --datatier GEN-SIM-RAW --conditions auto:phase1_2017_realistic --eventcontent RAWSIM --filein file:{} --python_filename {} --fileout file:{} -n -1 --era Run2_2017 --mc".format(finS1, fpyS1, foutS1)
+    f2 = checkStep(foutS1)
+
+    if f2:
+
+        driverCmdStep1 = "cmsDriver.py step1 --mc --eventcontent RAWSIM --pileup AVE_35_BX_25ns --datatier GEN-SIM --conditions 94X_mc2017_realistic_v11 --step DIGI,L1,DIGI2RAW,HLT --nThreads 8 --geometry DB:Extended --era Run2_2017 --filein file:{} --fileout file:{} -n {} --python_filename {}".format(finS1, foutS1, n, fpyS1)
+      #  driverCmdStep1 = "cmsDriver.py -s DIGI,L1,DIGI2RAW,HLT --datatier GEN-SIM-RAW --conditions auto:phase1_2017_realistic --eventcontent RAWSIM --filein file:{} --python_filename {} --fileout file:{} -n -1 --era Run2_2017 --mc".format(finS1, fpyS1, foutS1) 
     
-    cmd2 = driverCmdStep1.split(" ")
-    call(cmd2)
+#--pileup_input file:{} --pileup AVE_35_BX_25ns
+        cmd2 = driverCmdStep1.split(" ")
+        call(cmd2)
 
 
     finS2 = foutS1
     fpyS2 = "{}pythonScripts/{}FullS2.py".format(dataFold, eventName)
     foutS2 = "{}Events/{}Full.root".format(dataFold, eventName)
 
+    f3 = checkStep(foutS2)
 
-    driverCmdStep2 = "cmsDriver.py -s RAW2DIGI,L1Reco,RECO --datatier RECO --conditions auto:phase1_2017_realistic --eventcontent AODSIM --era Run2_2017 --filein file:{} --python_filename {} --fileout file:{} -n -1 --mc".format(finS2, fpyS2, foutS2)
+    if f3:
+        driverCmdStep2 = "cmsDriver.py step2 -n -1 -s RAW2DIGI,L1Reco,RECO --datatier RECO --conditions 94X_mc2017_realistic_v11 -nThreads 8 --eventcontent AODSIM --era Run2_2017 --filein file:{} --python_filename {} --fileout file:{} -n -1 --mc".format(finS2, fpyS2, foutS2)
 
-    cmd3 = driverCmdStep2.split(" ")
-    call(cmd3)
+        cmd3 = driverCmdStep2.split(" ")
+        call(cmd3)
 
     return
 
-def updateRunFile(fin, fout):
+def updateRunFile(fin, fout,eventName):
     runTemp = open("{}RunGammaGammaLeptonLepton_cfg.py".format(ggllfold),'r').read()
     runTemp = runTemp.replace("FILEIN","\"file:"+fin+"\"")
     runTemp = runTemp.replace("FILEOUT", "\"file:"+fout+"\"")
     
-    tmpRun = "{}runtemp.py".format(ggllfold)
+    tmpRun = "{}{}runtemp.py".format(ggllfold,eventName)
 
     tmp = open(tmpRun,'w')
     tmp.write(runTemp)
@@ -159,41 +177,112 @@ def updateRunFile(fin, fout):
     return tmpRun
     #print(runTemp)
 
+def runOskari(eventName):
+    
+
+    preparedRoot = "{}{}.root".format(oFold, eventName)
+    computedOut = "{}Computed/computed{}.root".format(dataFold, eventName)
+    reader = "{}reader.C(\"{}\",\"{}\")".format(ggllfold,preparedRoot,computedOut)
+    call(["root","-l", "-q",reader])
+
+    return
+
 def prepareComputed(eventName):
 
     eventRoot = "{}Events/{}.root".format(dataFold, eventName)
     ggOut = "{}GammaGammaOutput/{}.root".format(dataFold, eventName)
-    tmpRun=updateRunFile(eventRoot,ggOut)
+    
+    flag = checkStep(ggOut)
+    if flag:
+        tmpRun=updateRunFile(eventRoot,ggOut,eventName)
 
-    call(["cmsRun",tmpRun])
+        call(["cmsRun",tmpRun])
 
-    os.remove(tmpRun)
+        os.remove(tmpRun)
+
+    return
 
 def runComputed(eventName):
-
     preparedRoot = "{}GammaGammaOutput/{}.root".format(dataFold, eventName)
     computedOut = "{}Computed/computed{}.root".format(dataFold, eventName)
     reader = "{}reader.C(\"{}\",\"{}\")".format(ggllfold,preparedRoot,computedOut)
     call(["root","-l", "-q",reader])
 
+    return
+
+def checkStep(fpath):
+    if os.path.exists(fpath):
+        flag = raw_input(fpath+" already exists\nSkip to next step? [y/n]")
+        
+        if flag == "y":
+            return False
+        else:
+            return True
+    else:
+        return True
+
+def updateParameters():
+    compL = []
+    with open(flist, 'r') as f:
+        
+        line = f.readline()
+
+        while line:
+            if line[0]!='#':
+                comp = line.split(" ")[3].replace('\n',"").replace("computed","")
+                compL.append(comp)
+            
+
+            line = f.readline()
+        compL = list(set(compL))
+
+        f.close()
+    for c in compL:
+        print(c)
+        cc = c.replace(".root","")
+        print("{}GammaGammaOutput/{}.root".format(dataFold,cc))
+        if os.path.exists("{}GammaGammaOutput/{}.root".format(dataFold,cc)):
+            print("Updating " + cc)
+            runComputed(cc)
+
+    return
+
+def ggll(fnam):
+    prepareComputed(fnam)
+    return
 
 if __name__ == '__main__':
     
 
 
     eventName = sys.argv[1]
-    fullFlag = sys.argv[2]
     N = 1000
+    
+    if eventName == "-update":
+        updateParameters()
+
+        sys.exit(1)
+
+    if eventName == "-Oskari":
+        evt = sys.argv[2]
+        runOskari(evt)
+        sys.exit(1)
+
+    if eventName == "-ggll":
+        ggll(sys.argv[2])
+        sys.exit(1)
+
+    fullFlag = sys.argv[2]
     if len(sys.argv)==4:
         N = sys.argv[3]
-    #runMg5(eventName)
-    if fullFlag == "Full":
-        runCMSSWFull(eventName, n = 1000)
-        eventName = eventName + "Full"
-    else:
+#    runMg5(eventName)
+#    if fullFlag == "Full":
+#        runCMSSWFull(eventName, n = 10)
+#        eventName = eventName + "Full"
+#    else:
         #!!!!!!!!!!
         # Works only with CMSSW 9_2_3   
-        runCMSSWFast(eventName, n = 1000)
+#        runCMSSWFast(eventName, n = 1000)
 
     prepareComputed(eventName)
     runComputed(eventName)
